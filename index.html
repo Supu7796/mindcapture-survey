@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>九维个人成长分析量表</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
+.container{max-width:640px;margin:0 auto;padding:24px 16px}
+.header{text-align:center;margin-bottom:32px}
+.header h1{font-size:24px;font-weight:800;color:#0f172a;margin-bottom:8px}
+.header p{font-size:14px;color:#64748b;max-width:400px;margin:0 auto}
+.progress{margin-bottom:24px}
+.progress-bar{display:flex;justify-content:space-between;margin-bottom:6px}
+.progress-bar span{font-size:12px;color:#94a3b8}
+.progress-bar .count{font-weight:600;color:#475569}
+.progress-track{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#3366ff,#8b5cf6);border-radius:3px;transition:width .4s}
+.card{background:#fff;border-radius:16px;border:1px solid #f1f5f9;padding:20px;margin-bottom:8px;transition:all .3s;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.card.active{border-color:#d9e5ff;background:#f8faff}
+.q-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.q-num{width:24px;height:24px;border-radius:50%;background:#0f172a;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.q-tag{font-size:10px;font-weight:600;color:#3366ff;background:#eef4ff;padding:2px 8px;border-radius:4px;margin-right:6px}
+.q-text{font-size:14px;color:#334155;font-weight:500}
+.options{display:flex;gap:4px;margin-left:34px}
+.options button{flex:1;padding:8px 4px;border-radius:10px;border:none;background:#f1f5f9;color:#94a3b8;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;text-align:center}
+.options button .v{display:block;font-size:10px;color:#cbd5e1;margin-bottom:2px}
+.options button:hover{background:#e2e8f0;color:#64748b}
+.options button.sel{background:#0f172a;color:#fff}
+.options button.sel .v{color:#94a3b8}
+.contact-card{background:#fff;border-radius:16px;border:1px solid #f1f5f9;padding:20px;margin-top:16px}
+.contact-card h3{font-size:14px;font-weight:600;color:#1e293b;margin-bottom:12px}
+.btn-group{display:flex;gap:8px;margin-bottom:12px}
+.btn-group button{padding:8px 16px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;font-size:13px;color:#64748b;cursor:pointer;transition:all .2s}
+.btn-group button.sel{background:#0f172a;color:#fff;border-color:#0f172a}
+.contact-input{width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;outline:none;transition:border-color .2s}
+.contact-input:focus{border-color:#3366ff}
+.submit-btn{width:100%;padding:14px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:16px}
+.submit-btn.ready{background:#0f172a;color:#fff}
+.submit-btn:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed}
+.error{background:#fef2f2;color:#ef4444;padding:12px 16px;border-radius:12px;font-size:13px;margin-top:12px}
+.result{padding:24px 0}
+.result h2{text-align:center;font-size:22px;font-weight:800;color:#0f172a;margin-bottom:4px}
+.result .subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:24px}
+.score-card{text-align:center;background:#fff;border-radius:16px;border:1px solid #f1f5f9;padding:24px;margin-bottom:20px}
+.score-card .big{font-size:48px;font-weight:900;color:#0f172a}
+.score-card .big small{font-size:18px;color:#cbd5e1;font-weight:400}
+.score-card .label{font-size:13px;color:#94a3b8;margin-top:4px;margin-bottom:12px}
+.legend{display:flex;justify-content:center;gap:16px;font-size:12px}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend .dot{width:8px;height:8px;border-radius:50%}
+.chart-container{display:flex;justify-content:center;margin-bottom:24px}
+.dim-list{margin-top:32px}
+.dim-list h3{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:12px}
+.dim-item{background:#fff;border-radius:12px;border:1px solid #f1f5f9;padding:16px;margin-bottom:8px}
+.dim-item.low{border-color:#fde68a}
+.dim-item.mid{border-color:#bfdbfe}
+.dim-item.high{border-color:#a7f3d0}
+.dim-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dim-name{font-size:14px;font-weight:600;color:#1e293b;display:flex;align-items:center;gap:8px}
+.dim-name .d-dot{width:10px;height:10px;border-radius:50%}
+.dim-bars{display:flex;gap:2px}
+.dim-bars div{width:10px;height:6px;border-radius:2px}
+.dim-bars .on{background:#0f172a}
+.dim-bars .off{background:#e2e8f0}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px}
+.badge.low{background:#fef3c7;color:#d97706}
+.badge.mid{background:#dbeafe;color:#2563eb}
+.badge.high{background:#d1fae5;color:#059669}
+.dim-desc{font-size:12px;color:#94a3b8;margin-bottom:6px}
+.dim-tip{font-size:12px;color:#475569;background:#f8fafc;border-radius:8px;padding:8px 12px;line-height:1.6}
+.dim-tip strong{color:#0f172a}
+.retry-link{text-align:center;margin-top:24px}
+.retry-link a{font-size:13px;color:#94a3b8;text-decoration:none}
+.retry-link a:hover{color:#3366ff}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+const questions=[
+  {key:'perception',label:'知觉',text:'我能够客观看待自己的优缺点，不容易因一次失败而全面否定自己。'},
+  {key:'attribution',label:'归因',text:'事情不顺时，我能够平衡地看待自身原因和环境原因，不过度自责。'},
+  {key:'decision',label:'决策',text:'面对选择，我能够做出决定并承担后果，不会反复纠结。'},
+  {key:'values',label:'价值观',text:'我清楚自己真正在乎什么、什么是绝对不能放弃的。'},
+  {key:'attitude',label:'态度',text:'我知道自己应该做什么，并且愿意去做，不会知道该做但不想做。'},
+  {key:'efficacy',label:'自我效能感',text:'即使面对困难，我也相信自己最终能够完成重要任务。'},
+  {key:'personality',label:'人格',text:'我了解自己的性格特点，知道在什么环境中更能发挥优势。'},
+  {key:'emotion',label:'情绪',text:'我能够识别自己的情绪，并能够有效调节，不被情绪控制。'},
+  {key:'resilience',label:'压力与韧性',text:'面对压力我能有效应对，经历挫折后能够较快恢复。'},
+];
+const dims=[
+  {key:'perception',label:'知觉',desc:'客观看待自己，不因一次失败否定自己',lowTip:'试着每天写下1件自己做得好的小事，坚持21天',midTip:'保持觉察，遇到失败时用纸笔写下客观事实和主观感受分开看'},
+  {key:'attribution',label:'归因',desc:'平衡看待自身原因和环境原因，不过度自责',lowTip:'下次遇到不顺时，画一个圆分两半：一半写自身原因，一半写环境原因',midTip:'练习用既...又...句式，如既有我的疏忽，也有外部因素'},
+  {key:'decision',label:'决策',desc:'能做出决定并承担后果，不反复纠结',lowTip:'小决定用1分钟计时器，大决定列利弊清单限24小时',midTip:'不影响生命安全的事，快速决定比完美决定更重要'},
+  {key:'values',label:'价值观',desc:'清楚自己真正在乎什么，什么是不能放弃的',lowTip:'写下10个你在乎的东西，逐个划掉，剩下3个',midTip:'每月末回顾，看看时间花在了你认为重要的事情上没有'},
+  {key:'attitude',label:'态度',desc:'知道该做什么并愿意去做，不拖延',lowTip:'用2分钟法则：如果2分钟内能做完，立刻做',midTip:'把大任务拆成最小可执行步骤，只要求自己完成第一步'},
+  {key:'efficacy',label:'自我效能感',desc:'即使面对困难也相信自己能完成重要任务',lowTip:'回顾过去3次你克服困难的经历，每次写一句我当时是怎么做到的',midTip:'找一位榜样观察他如何克服类似困难，从替代经验中获取信心'},
+  {key:'personality',label:'人格',desc:'了解自己性格特点，知道在什么环境更能发挥优势',lowTip:'向3个熟悉你的人询问你觉得我最大的3个优点是什么',midTip:'尝试在不同环境中做同一件事，观察自己在哪种环境中更自在'},
+  {key:'emotion',label:'情绪',desc:'能识别自己情绪并有效调节',lowTip:'每天用3个词记录情绪变化，给每种情绪打分1-10',midTip:'当情绪强烈时，先深呼吸6秒再反应，给自己一个暂停键'},
+  {key:'resilience',label:'压力与韧性',desc:'面对压力能有效应对，经历挫折后能较快恢复',lowTip:'建立恢复清单：写下5件能让你快速恢复能量的小事',midTip:'每次经历挫折后写一段经验复盘：发生了什么、学到什么、下次怎么做'},
+];
+const options=[{v:1,l:'完全不符合'},{v:2,l:'不太符合'},{v:3,l:'一般'},{v:4,l:'比较符合'},{v:5,l:'完全符合'}];
+
+let answers={},wantContact=false,contact='',submitted=false;
+let wantContactRef=false,contactRef='';
+
+function h(tag,attrs,...children){
+  const el=document.createElement(tag);
+  if(attrs){
+    if(typeof attrs==='string'){el.className=attrs;}
+    else Object.entries(attrs).forEach(([k,v])=>{
+    if(k==='className')el.className=v;
+    else if(k.startsWith('on'))el.addEventListener(k.slice(2).toLowerCase(),v);
+    else el.setAttribute(k,v);
+  });}
+  children.flat().forEach(c=>{if(typeof c==='string')el.appendChild(document.createTextNode(c));else if(c)el.appendChild(c)});
+  return el;
+}
+
+function renderSurvey(){
+  const app=document.getElementById('app');
+  app.innerHTML='';
+  const answered=Object.keys(answers).length;
+  const allDone=answered===9;
+
+  const items=[
+    h('div','header',null,
+      h('h1',null,'九维个人成长分析量表'),
+      h('p',null,'本量表基于组织行为学九大核心概念编制，填写约3分钟。所有信息仅用于成长支持，严格保密。')
+    ),
+    h('div','progress',null,
+      h('div','progress-bar',null,
+        h('span',null,'进度'),
+        h('span','count',null,answered+' / 9')
+      ),
+      h('div','progress-track',null,
+        h('div','progress-fill',{style:'width:'+(answered/9*100)+'%'})
+      )
+    ),
+  ];
+
+  questions.forEach((q,i)=>{
+    const sel=answers[q.key];
+    items.push(
+      h('div','card'+(sel?' active':''),null,
+        h('div','q-header',null,
+          h('span','q-num',null,''+ (i+1)),
+          h('span',null,h('span','q-tag',null,q.label),h('span','q-text',null,q.text))
+        ),
+        h('div','options',null,
+          ...options.map(o=>h('button',{className:sel===o.v?'sel':'',onClick:()=>{answers[q.key]=o.v;renderSurvey();}},
+            h('span','v',null,'' + o.v),o.l
+          ))
+        )
+      )
+    );
+  });
+
+  items.push(
+    h('div','contact-card',null,
+      h('h3',null,'是否希望获得个人报告的详细解读？（免费）'),
+      h('div','btn-group',null,
+        h('button',{className:wantContact?'sel':'',onClick:()=>{wantContact=true;renderSurvey();}},'希望，请留下联系方式'),
+        h('button',{className:!wantContact?'sel':'',onClick:()=>{wantContact=false;contact='';renderSurvey();}},'暂时不需要')
+      ),
+      wantContact?h('input',{className:'contact-input',type:'text',placeholder:'请留下你的微信号或手机号（仅用于预约解读，严格保密）',value:contact,onInput:(e)=>{contact=e.target.value}}):null
+    )
+  );
+
+  items.push(
+    h('button',{className:'submit-btn'+(allDone?' ready':''),disabled:!allDone,onClick:submitSurvey},
+      allDone?'提交并查看报告':'还需回答 '+(9-answered)+' 题'
+    )
+  );
+
+  items.forEach(el=>app.appendChild(el));
+}
+
+function submitSurvey(){
+  wantContactRef=wantContact;contactRef=contact;
+  const total=Object.values(answers).reduce((s,v)=>s+v,0);
+  const dimResults=dims.map(d=>({...d,score:answers[d.key]||0,level:(answers[d.key]||0)<3?'low':(answers[d.key]||0)<=4?'mid':'high'}));
+  const result={total,max:45,dimResults};
+  submitted=true;
+  renderResult(result);
+}
+
+function renderResult(r){
+  const app=document.getElementById('app');
+  app.innerHTML='';
+  const lowCount=r.dimResults.filter(d=>d.level==='low').length;
+  const midCount=r.dimResults.filter(d=>d.level==='mid').length;
+  const highCount=r.dimResults.filter(d=>d.level==='high').length;
+
+  const items=[
+    h('div','result',null,
+      h('h2',null,'你的个人成长报告'),
+      h('p','subtitle',null,'基于九维成长量表的分析结果'),
+    ),
+    h('div','score-card',null,
+      h('div','big',null,'' + r.total, h('small',null,' / '+r.max)),
+      h('div','label',null,'综合得分'),
+      h('div','legend',null,
+        h('span',null,h('span','dot',{style:'background:#10b981'}),'优势 '+highCount),
+        h('span',null,h('span','dot',{style:'background:#3b82f6'}),'发展 '+midCount),
+        h('span',null,h('span','dot',{style:'background:#f59e0b'}),'卡点 '+lowCount),
+      )
+    ),
+    h('div','chart-container',null,renderRadar(r.dimResults)),
+    h('div','dim-list',null,
+      h('h3',null,'维度详细解读'),
+      ...r.dimResults.map(d=>{
+        const lv=d.level;
+        const colors={low:{dot:'#f59e0b',badge:'low',text:'成长卡点'},mid:{dot:'#3b82f6',badge:'mid',text:'发展中'},high:{dot:'#10b981',badge:'high',text:'优势领域'}};
+        const c=colors[lv];
+        return h('div','dim-item '+lv,null,
+          h('div','dim-top',null,
+            h('span','dim-name',null,h('span','d-dot',{style:'background:'+c.dot}),d.label),
+            h('span','badge '+c.badge,null,d.score+' · '+c.text)
+          ),
+          h('div','dim-bars',null,...[1,2,3,4,5].map(i=>h('div',{className:i<=d.score?'on':'off'}))),
+          h('div','dim-desc',null,d.desc),
+          h('div','dim-tip',null,h('strong',null,'建议：'),lv==='low'?d.lowTip:d.midTip)
+        );
+      })
+    ),
+    h('div','retry-link',null,h('a',{href:'javascript:location.reload()'},'重新填写问卷'))
+  ];
+
+  items.forEach(el=>app.appendChild(el));
+}
+
+function renderRadar(dimensions){
+  const size=300,cx=size/2,cy=size/2,radius=size*0.32,levels=5;
+  const angleSlice=Math.PI*2/dimensions.length;
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');
+  svg.setAttribute('viewBox','0 0 '+size+' '+size);
+  svg.setAttribute('width',size);svg.setAttribute('height',size);
+
+  for(let l=1;l<=levels;l++){
+    const r=radius*l/levels;
+    const pts=dimensions.map((_,i)=>{
+      const a=angleSlice*i-Math.PI/2;
+      return (cx+r*Math.cos(a))+','+(cy+r*Math.sin(a));
+    }).join(' ');
+    const poly=document.createElementNS(svgNS,'polygon');
+    poly.setAttribute('points',pts);
+    poly.setAttribute('fill','none');
+    poly.setAttribute('stroke',l===levels?'#cbd5e1':'#e2e8f0');
+    poly.setAttribute('stroke-width',l===levels?'1.5':'0.5');
+    svg.appendChild(poly);
+  }
+
+  dimensions.forEach((_,i)=>{
+    const a=angleSlice*i-Math.PI/2;
+    const line=document.createElementNS(svgNS,'line');
+    line.setAttribute('x1',cx);line.setAttribute('y1',cy);
+    line.setAttribute('x2',cx+radius*Math.cos(a));line.setAttribute('y2',cy+radius*Math.sin(a));
+    line.setAttribute('stroke','#e2e8f0');line.setAttribute('stroke-width','0.5');
+    svg.appendChild(line);
+  });
+
+  const dpts=dimensions.map((d,i)=>{
+    const a=angleSlice*i-Math.PI/2;
+    return (cx+d.score/levels*radius*Math.cos(a))+','+(cy+d.score/levels*radius*Math.sin(a));
+  }).join(' ');
+  const dpoly=document.createElementNS(svgNS,'polygon');
+  dpoly.setAttribute('points',dpts);
+  dpoly.setAttribute('fill','rgba(51,102,255,0.12)');
+  dpoly.setAttribute('stroke','#3366ff');
+  dpoly.setAttribute('stroke-width','2');
+  dpoly.setAttribute('stroke-linejoin','round');
+  svg.appendChild(dpoly);
+
+  dimensions.forEach((d,i)=>{
+    const a=angleSlice*i-Math.PI/2;
+    const px=cx+d.score/levels*radius*Math.cos(a);
+    const py=cy+d.score/levels*radius*Math.sin(a);
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('cx',px);c.setAttribute('cy',py);
+    c.setAttribute('r','4');c.setAttribute('fill','white');c.setAttribute('stroke','#3366ff');c.setAttribute('stroke-width','2');
+    svg.appendChild(c);
+
+    const lx=cx+(radius+32)*Math.cos(a);
+    const ly=cy+(radius+32)*Math.sin(a);
+    const lt=document.createElementNS(svgNS,'text');
+    lt.setAttribute('x',lx);lt.setAttribute('y',ly);
+    lt.setAttribute('text-anchor','middle');lt.setAttribute('dominant-baseline','central');
+    lt.setAttribute('fill','#475569');lt.setAttribute('font-size','12');lt.setAttribute('font-weight','600');
+    lt.textContent=d.label;
+    svg.appendChild(lt);
+
+    const st=document.createElementNS(svgNS,'text');
+    st.setAttribute('x',px);st.setAttribute('y',py+16);
+    st.setAttribute('text-anchor','middle');
+    st.setAttribute('fill','#3366ff');st.setAttribute('font-size','11');st.setAttribute('font-weight','700');
+    st.textContent=d.score;
+    svg.appendChild(st);
+  });
+
+  return svg;
+}
+
+renderSurvey();
+</script>
+</body>
+</html>
